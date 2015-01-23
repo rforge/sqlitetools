@@ -1,0 +1,5 @@
+OBJECTS = sqliteTools.o sqlite3.o
+CXX_STD = CXX11
+all: $(SHLIB)
+clean: 
+	rm -f $(OBJECTS)
