@@ -14,6 +14,7 @@ struct callback_data
 	sqlite_stmt * stmt;
 	unsigned int expand_start;	// = 3 + n_copy_columns
 	unsigned int expand_end;	// = expand_start + n_expand - 1
+	unsigned long int n_insert; // = number of inserted rows
 };
 
 
@@ -50,6 +51,9 @@ int expand_callback(void *ptr, int nrows, char **column_value, char **column_nam
 		stmt->bind_int(3, index);
 		if(!stmt->step())
 			os << "[expand_table.expand_callback] Step error!";
+
+		// Increase insertion row counter
+		++cd->n_insert;
 	}
 	return 0;
 }
@@ -94,7 +98,7 @@ void create_output_table(sqlite_con &con,
 	sql << "rid INTEGER"					<< delim;
 
 	// Index column
-	sql << index_column << " TEXT"			<< delim;
+	sql << index_column << " INTEGER"			<< delim;
 
 	// Names and types for columns which are copied
 	iter1 = copyCols.begin();
@@ -326,6 +330,8 @@ SEXP expand_table(SEXP pParams, SEXP pCopyCol, SEXP pCopyColTypes,  SEXP pExpCol
 
 	// Prepare struct which will be passed to callback function
 	callback_data cd;
+	cd.n_insert = 0;
+
 	cd.stmt = &stmt;
 	cd.expand_start = 3 + nCopyCols;
 	cd.expand_end = cd.expand_start + nExpandCols - 1;
@@ -353,7 +359,10 @@ SEXP expand_table(SEXP pParams, SEXP pCopyCol, SEXP pCopyColTypes,  SEXP pExpCol
 	else
 		error("Database closing error!");
 
-	return R_NilValue;
+	SEXP pRes = PROTECT(allocVector(INTSXP, 1));
+	INTEGER(pRes)[0] = cd.n_insert;
+	UNPROTECT(1);
+	return pRes;
 }
 
 

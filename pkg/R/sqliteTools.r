@@ -105,9 +105,9 @@ expandTable <- function(dbfile,
     )
     
     # (pParams, pCopyCol, pCopyColTypes,  pExpCol, pVerbose)
-    .Call("expand_table", params, copyCols, copyColTypes,
-            expandCols, verbose, PACKAGE="sqliteTools")
-    return(invisible())
+    n_insert <- .Call("expand_table", params, copyCols, copyColTypes,
+                    expandCols, verbose, PACKAGE="sqliteTools")
+    return(invisible(n_insert))
 }
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #

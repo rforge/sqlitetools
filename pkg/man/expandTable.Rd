@@ -3,9 +3,7 @@
 % Alias
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - %
 \alias{expandTable}
-\title{expandTable
-%%  ~~function to do ... ~~
-}
+\title{expandTable: Expands database rows into multiple database output rows. }
 \description{Reads readTable and writes replicated and equally distributed
 values into writeTable.}
 \usage{
@@ -23,9 +21,9 @@ expandTable(dbfile, tables, boundCols, indexCol, copyCols, expandCols, verbose=F
     \item{expandCols}{character. Name of columns which are expanded.}
     \item{verbose}{numeric. Verbosity of printed output.}
 }
-\details{The function expands 'quant' value for weeks between 
-min_woche and max_woche, as long as the distance to woche_index is <= 13.}
-\value{None.}
+\details{The function expands 'indexCol' value for values between 
+first and second boundCols value.}
+\value{Integer. Number of rows inserted into output table.}
 \author{Wolfgang Kaisers}
 \examples{
 n <- 5
@@ -52,6 +50,7 @@ con <- dbConnect(RSQLite::SQLite(), dbfile)
 dbWriteTable(con, tables[1], dfr, overwrite=TRUE)
 dbDisconnect(con)
 # Do replicate
-expandTable(dbfile, tables, boundCols, indexCol, copyCols, expandCols, verbose)
+nr <- expandTable(dbfile, tables, boundCols, indexCol, copyCols, expandCols, verbose)
+nr
 }
 \keyword{expandTable}
